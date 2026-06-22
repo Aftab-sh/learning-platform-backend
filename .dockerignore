@@ -1,0 +1,14 @@
+target/
+.git/
+.gitignore
+.idea/
+.settings/
+.classpath
+.project
+*.iml
+.mvn/
+mvnw
+mvnw.cmd
+README.md
+HELP.md
+.env
