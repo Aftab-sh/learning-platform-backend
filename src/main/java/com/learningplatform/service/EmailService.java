@@ -44,7 +44,7 @@ public class EmailService
     
  // ── Verification Email ──
     public void sendVerificationEmail(User user, String verificationToken) {
-        String actionUrl = frontendUrl + "/verify-email.html?token=" + verificationToken;
+        String actionUrl = frontendUrl + "/verify-email?token=" + verificationToken;
         sendHtmlEmail(user.getEmail(), "Verify Your Email", actionUrl,
                 "Thank you for registering. Please verify your email.",
                 "Verify Email");
@@ -52,7 +52,7 @@ public class EmailService
 
     // ── Forgot Password Email ──
     public void sendForgotPasswordEmail(String email, String resetToken) {
-        String actionUrl = frontendUrl + "/reset-password.html?token=" + resetToken;
+        String actionUrl = frontendUrl + "/reset-password?token=" + resetToken;
         sendHtmlEmail(email, "Reset Your Password", actionUrl,
                 "We received a request to reset your password.",
                 "Reset Password");

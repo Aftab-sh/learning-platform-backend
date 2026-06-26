@@ -44,9 +44,17 @@ public class SecurityConfig {
                 .requestMatchers("/api/users/login", "/api/users/register","/live-quiz/**",
                 		           "/api/users/forgot-password","/api/users/reset-password").permitAll()
                 
-                	 
+                .requestMatchers(
+                        "/live-quiz/**",
+                        "/ws/**",
+                        "/topic/**",
+                        "/app/**"
+                ).permitAll()
                 
                 .requestMatchers("/api/live-quiz/**").permitAll()
+                
+                
+                
                 .requestMatchers("/api/auth/verify-email", "/api/auth/resend-verification").permitAll()                .anyRequest().authenticated()
             )
             .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
