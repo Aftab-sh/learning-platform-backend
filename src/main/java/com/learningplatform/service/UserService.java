@@ -94,6 +94,33 @@ this.userRepository=userRepository;
                 savedUser.getRole().name()
         
         );
+//        User user = new User();
+//        user.setName(request.getName());
+//        user.setEmail(request.getEmail());
+//        user.setPassword(passwordEncoder.encode(request.getPassword()));
+//        user.setRole(request.getRole());
+//        user.setEmailVerified(false);
+//        
+//        log.info("Generating verification token");
+//        String verificationToken = UUID.randomUUID().toString();
+//        user.setVerificationToken(verificationToken);
+//        user.setVerificationTokenExpiry(LocalDateTime.now().plusHours(1)); // ✅ expiry set
+//        
+//        log.info("Saving user into database");
+//        User savedUser = userRepository.save(user);
+//        
+//        log.info("Sending verification email");
+//        emailService.sendVerificationEmail(savedUser, verificationToken);
+//
+//        log.info("Registration completed successfully");
+//        return new UserResponse(
+//                savedUser.getId(),
+//                savedUser.getName(),
+//                savedUser.getEmail(),
+//                savedUser.getRole().name()
+//        );
+        
+        
     }
 
  // ── LOGIN ──
