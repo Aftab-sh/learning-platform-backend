@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import com.learningplatform.Exception.BadRequestException;
@@ -43,6 +44,7 @@ public class EmailService
 
     
  // ── Verification Email ──
+    @Async
     public void sendVerificationEmail(User user, String verificationToken) {
         String actionUrl = frontendUrl + "/verify-email?token=" + verificationToken;
         sendHtmlEmail(user.getEmail(), "Verify Your Email", actionUrl,
@@ -51,6 +53,7 @@ public class EmailService
     }
 
     // ── Forgot Password Email ──
+    @Async
     public void sendForgotPasswordEmail(String email, String resetToken) {
         String actionUrl = frontendUrl + "/reset-password?token=" + resetToken;
         sendHtmlEmail(email, "Reset Your Password", actionUrl,
@@ -189,9 +192,8 @@ public class EmailService
 
         } catch (MessagingException e)
         {
-            log.info("Failed to send email");
+            log.error("Failed to send email");
 
-            throw new BadRequestException("Failed to send email");
         }
     }
 }
