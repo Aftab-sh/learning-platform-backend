@@ -48,12 +48,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         // ✅ PUBLIC ENDPOINTS – NO JWT
      // ✅ PUBLIC ENDPOINTS – NO JWT
         if (path.equals("/api/users/login") ||
-            path.equals("/api/users/register") ||
-            path.equals("/api/users/forgot-password") ||
-            path.equals("/api/users/reset-password") ||
-            path.equals("/api/users/verify-email") ||
-            path.equals("/api/users/resend-verification") ||
-            path.startsWith("/live-quiz")) {
+        	    path.equals("/api/users/register") ||
+        	    path.equals("/api/users/forgot-password") ||
+        	    path.equals("/api/users/reset-password") ||
+        	    path.equals("/api/auth/verify-email") ||
+        	    path.equals("/api/auth/resend-verification") ||
+        	    path.startsWith("/live-quiz")) {
             System.out.println("✅ Skipping JWT for: " + path);
             filterChain.doFilter(request, response);
             return;

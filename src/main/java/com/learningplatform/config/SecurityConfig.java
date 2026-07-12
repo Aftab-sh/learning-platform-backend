@@ -45,11 +45,10 @@ public class SecurityConfig {
                 		
                 		 "/api/users/login",
                 	        "/api/users/register",
-                	        "/api/users/verify-email",
-                	        "/api/users/resend-verification",
                 	        "/api/users/forgot-password",
                 	        "/api/users/reset-password",
-                	        "/live-quiz/**"
+                	        "/api/auth/verify-email",
+                	        "/api/auth/resend-verification"
                 		).permitAll()
                 
                 .requestMatchers(
