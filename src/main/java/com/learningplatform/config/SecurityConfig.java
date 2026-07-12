@@ -48,7 +48,8 @@ public class SecurityConfig {
                 	        "/api/users/verify-email",
                 	        "/api/users/resend-verification",
                 	        "/api/users/forgot-password",
-                	        "/api/users/reset-password"
+                	        "/api/users/reset-password",
+                	        "/live-quiz/**"
                 		).permitAll()
                 
                 .requestMatchers(
