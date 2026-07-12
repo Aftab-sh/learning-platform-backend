@@ -1,49 +1,43 @@
 package com.learningplatform.service;
 
-import jakarta.mail.MessagingException;
-import jakarta.mail.internet.MimeMessage;
 import lombok.extern.slf4j.Slf4j;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import com.learningplatform.Exception.BadRequestException;
 import com.learningplatform.entity.User;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 @Service
 @Slf4j
-public class EmailService
-{
+public class EmailService {
 
-    
-    private final JavaMailSender mailSender;
-    
-    @Autowired
-    EmailService(JavaMailSender mailSender)
-    {
-    	this.mailSender=mailSender;
-    	
-    }
+    private final RestTemplate restTemplate = new RestTemplate();
 
-    @Value("${spring.mail.username}")
-    private String from;
+    private static final String BREVO_API_URL = "https://api.brevo.com/v3/smtp/email";
 
-    @Value("${app.base-url}")
-    private String baseUrl;
-    
-    
+    @Value("${brevo.api-key}")
+    private String brevoApiKey;
+
+    @Value("${brevo.sender-email}")
+    private String senderEmail;
+
+    @Value("${brevo.sender-name}")
+    private String senderName;
+
     @Value("${app.frontend-url}")
     private String frontendUrl;
 
-  
-
-
-    
- // ── Verification Email ──
+    // ── Verification Email ──
     @Async
     public void sendVerificationEmail(User user, String verificationToken) {
         String actionUrl = frontendUrl + "/verify-email?token=" + verificationToken;
@@ -61,22 +55,40 @@ public class EmailService
                 "Reset Password");
     }
 
-    // ── Private method to send HTML email ──
+    // ── Send email via Brevo HTTP API ──
     private void sendHtmlEmail(String toEmail, String subject, String actionUrl,
-                               String message, String buttonText) {
+                                String message, String buttonText) {
         try {
             String content = buildEmailContent(subject, message, actionUrl, buttonText);
-            MimeMessage mimeMessage = mailSender.createMimeMessage();
-            MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
 
-            helper.setTo(toEmail);          // ✅ Correct: expects String email
-            helper.setSubject(subject);
-            helper.setFrom(from);
-            helper.setText(content, true);
+            HttpHeaders headers = new HttpHeaders();
+            headers.set("api-key", brevoApiKey);
+            headers.setContentType(MediaType.APPLICATION_JSON);
+            headers.setAccept(List.of(MediaType.APPLICATION_JSON));
 
-            mailSender.send(mimeMessage);
-        } catch (MessagingException e) {
-            throw new BadRequestException("Failed to send email: " + e.getMessage());
+            Map<String, Object> sender = new HashMap<>();
+            sender.put("name", senderName);
+            sender.put("email", senderEmail);
+
+            Map<String, Object> recipient = new HashMap<>();
+            recipient.put("email", toEmail);
+
+            Map<String, Object> body = new HashMap<>();
+            body.put("sender", sender);
+            body.put("to", List.of(recipient));
+            body.put("subject", subject);
+            body.put("htmlContent", content);
+
+            HttpEntity<Map<String, Object>> request = new HttpEntity<>(body, headers);
+
+            log.info("Sending email to {} via Brevo", toEmail);
+            restTemplate.postForEntity(BREVO_API_URL, request, String.class);
+            log.info("Email sent successfully to {}", toEmail);
+
+        } catch (Exception e) {
+            log.error("Failed to send email to {} : {}", toEmail, e.getMessage());
+            // NOTE: don't throw here — this runs on an @Async thread,
+            // so a thrown exception never reaches the controller anyway.
         }
     }
 
@@ -118,82 +130,5 @@ public class EmailService
         </body>
         </html>
         """.formatted(subject, message, actionUrl, buttonText, actionUrl);
-    }
-
-
-     void sendEmail(String email, String token, String subject, String message,
-                           String path, String buttonText) 
-    {
-    	
-        try {
-        	log.info("Sending email to {}",email);
-            String actionUrl = baseUrl + path + "?token=" + token;
-
-            String content = """
-                    <!DOCTYPE html>
-                    <html>
-                    <head>
-                        <meta charset="UTF-8">
-                    </head>
-                    <body style="margin:0;padding:0;background-color:#f4f6f8;font-family:Arial,sans-serif;">
-                    <table width="100%%" cellpadding="0" cellspacing="0">
-                        <tr>
-                            <td align="center">
-                                <table width="600" cellpadding="0" cellspacing="0"
-                                       style="background:white;margin-top:40px;border-radius:10px;overflow:hidden;box-shadow:0 2px 10px rgba(0,0,0,0.1);">
-                                    <tr>
-                                        <td align="center"
-                                            style="background:#2563eb;color:white;padding:25px;">
-                                            <h1 style="margin:0;">Learning Platform</h1>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td style="padding:40px;">
-                                            <h2 style="color:#222;">%s</h2>
-                                            <p style="font-size:16px;color:#555;">%s</p>
-                                            <div style="text-align:center;margin:35px 0;">
-                                                <a href="%s"
-                                                   style="background:#2563eb;color:white;padding:14px 28px;
-                                                          text-decoration:none;border-radius:6px;font-weight:bold;
-                                                          display:inline-block;">
-                                                    %s
-                                                </a>
-                                            </div>
-                                            <p style="color:#666;">
-                                                If the button above does not work,
-                                                copy and paste the following URL into your browser:
-                                            </p>
-                                            <p style="word-break:break-all;color:#2563eb;">%s</p>
-                                            <hr>
-                                            <p style="color:#888;font-size:13px;">
-                                                This link was generated automatically.
-                                                If you did not request this action,
-                                                you can safely ignore this email.
-                                            </p>
-                                        </td>
-                                    </tr>
-                                </table>
-                            </td>
-                        </tr>
-                    </table>
-                    </body>
-                    </html>
-                    """.formatted(subject, message, actionUrl, buttonText, actionUrl);
-
-            MimeMessage mimeMessage = mailSender.createMimeMessage();
-            MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
-            helper.setTo(email);
-            helper.setSubject(subject);
-            helper.setFrom(from);
-            helper.setText(content, true);
-            log.info("Email sent successfully");
-
-            mailSender.send(mimeMessage);
-
-        } catch (MessagingException e)
-        {
-            log.error("Failed to send email");
-
-        }
     }
 }

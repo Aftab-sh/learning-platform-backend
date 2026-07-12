@@ -51,22 +51,20 @@ this.userRepository=userRepository;
     	
     }
 
-    // ── REGISTER ──
+ // ── REGISTER ──
     public UserResponse registerUser(RegisterRequest request) 
     {
-    	log.info("Registration request received");
-    	
-    	
+        log.info("Registration request received");
+
         Optional<User> existingUserOpt = userRepository.findByEmail(request.getEmail());
         log.info("Checking existing user");
-
 
         if (existingUserOpt.isPresent()) 
         {
             User existingUser = existingUserOpt.get();
             if (existingUser.isEmailVerified())
             {
-            	log.warn("User already exists");
+                log.warn("User already exists");
                 throw new BadRequestException("User already exists and verified");
             }
             // Resend: update token and expiry
@@ -74,51 +72,37 @@ this.userRepository=userRepository;
             existingUser.setVerificationToken(newToken);
             existingUser.setVerificationTokenExpiry(LocalDateTime.now().plusHours(1));
             userRepository.save(existingUser);
-            
+
             emailService.sendVerificationEmail(existingUser, newToken);
             throw new BadRequestException("Verification email resent. Check your Inbox");
         }
+
         User user = new User();
         user.setName(request.getName());
         user.setEmail(request.getEmail());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setRole(request.getRole());
-        user.setEmailVerified(true); // ✅ Auto verified
+        user.setEmailVerified(false); // ✅ ab default false
 
+        log.info("Generating verification token");
+        String verificationToken = UUID.randomUUID().toString();
+        user.setVerificationToken(verificationToken);
+        user.setVerificationTokenExpiry(LocalDateTime.now().plusHours(1));
+
+        log.info("Saving user into database");
         User savedUser = userRepository.save(user);
 
+        log.info("Sending verification email");
+        emailService.sendVerificationEmail(savedUser, verificationToken);
+
+        log.info("Registration completed successfully");
         return new UserResponse(
                 savedUser.getId(),
                 savedUser.getName(),
                 savedUser.getEmail(),
                 savedUser.getRole().name()
-        
         );
-//        User user = new User();
-//        user.setName(request.getName());
-//        user.setEmail(request.getEmail());
-//        user.setPassword(passwordEncoder.encode(request.getPassword()));
-//        user.setRole(request.getRole());
-//        user.setEmailVerified(false);
-//        
-//        log.info("Generating verification token");
-//        String verificationToken = UUID.randomUUID().toString();
-//        user.setVerificationToken(verificationToken);
-//        user.setVerificationTokenExpiry(LocalDateTime.now().plusHours(1)); // ✅ expiry set
-//        
-//        log.info("Saving user into database");
-//        User savedUser = userRepository.save(user);
-//        
-//        log.info("Sending verification email");
-//        emailService.sendVerificationEmail(savedUser, verificationToken);
-//
-//        log.info("Registration completed successfully");
-//        return new UserResponse(
-//                savedUser.getId(),
-//                savedUser.getName(),
-//                savedUser.getEmail(),
-//                savedUser.getRole().name()
-//        );
+    }
         
         
     }
