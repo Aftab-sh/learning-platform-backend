@@ -257,8 +257,19 @@ public class StudentService {
         log.info("update Progress in quiz question");
         StudentProgress progress = progressRepository.findByStudentIdAndModuleId(student.getId(), moduleId)
                 .orElse(new StudentProgress());
-        progress.setStudentId(student.getId());
-        progress.setModuleId(moduleId);
+        
+        
+        ModuleEntity module1 = moduleRepository.findById(moduleId)
+                .orElseThrow(() -> new ResourceNotFoundException("Module", "id", moduleId));
+
+        progress.setStudent(student);
+        progress.setModule(module1);
+        
+//        progress.setStudentId(student.getId());
+//        progress.setModuleId(moduleId);
+        
+        
+        
         progress.setQuizScore((int) Math.round(percentage));
         if (passed && !Boolean.TRUE.equals(progress.getModuleCompleted())) {
             progress.setModuleCompleted(true);

@@ -9,6 +9,8 @@ public interface StudentProgressRepository extends JpaRepository<StudentProgress
     Optional<StudentProgress> findByStudentIdAndModuleId(Long studentId, Long moduleId);
     List<StudentProgress> findByStudentId(Long studentId);
     boolean existsByStudentIdAndModuleIdAndModuleCompletedTrue(Long studentId, Long moduleId);
+    
+    
 
     
 }

@@ -13,9 +13,15 @@ public class StudentProgress {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Long studentId;
-    private Long moduleId;
-    private Integer quizScore = 0;         // percentage
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "student_id", nullable = false)
+    private User student;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "module_id", nullable = false)
+    private ModuleEntity module;
+
+    private Integer quizScore = 0;
     private Boolean moduleCompleted = false;
     private LocalDateTime completedAt;
 }

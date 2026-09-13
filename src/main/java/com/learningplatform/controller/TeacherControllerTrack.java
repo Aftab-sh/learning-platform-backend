@@ -116,8 +116,7 @@ public class TeacherControllerTrack {
             // Better: count only modules belonging to this course
             Set<Long> moduleIds = modules.stream().map(ModuleEntity::getId).collect(Collectors.toSet());
             long completedInCourse = allProgress.stream()
-                    .filter(p -> p.getModuleCompleted() && moduleIds.contains(p.getModuleId()))
-                    .count();
+            		.filter(p -> p.getModuleCompleted() && moduleIds.contains(p.getModule().getId()))                    .count();
 
             double percentage = modules.isEmpty() ? 0 : (completedInCourse * 100.0 / modules.size());
 
