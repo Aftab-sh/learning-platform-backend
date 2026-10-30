@@ -67,49 +67,7 @@ public class SecurityConfig {
 
         return http.build();
     }
-    
-//    @Bean
-//    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-//        http
-//            .csrf(csrf -> csrf.disable())
-//          
-//            .cors(cors -> cors.configurationSource(corsConfigurationSource))
-//            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-//            .authorizeHttpRequests(auth -> auth
-//                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-//                .requestMatchers(
-//                		
-//                		
-//                		
-//                		
-//                		
-//                		
-//                		
-//                		 "/api/users/login",
-//                	        "/api/users/register",
-//                	        "/api/users/forgot-password",
-//                	        "/api/users/reset-password",
-//                	        "/api/auth/verify-email",
-//                	        "/api/auth/resend-verification"
-//                		).permitAll()
-//                
-//                .requestMatchers(
-//                        "/live-quiz/**",
-//                        "/ws/**",
-//                        "/topic/**",
-//                        "/app/**"
-//                ).permitAll()
-//                
-//                .requestMatchers("/api/live-quiz/**").permitAll()
-//                
-//                
-//                
-//                .requestMatchers("/api/auth/verify-email", "/api/auth/resend-verification").permitAll()                .anyRequest().authenticated()
-//            )
-//            .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
-//
-//        return http.build();
-//    }
+
  
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {

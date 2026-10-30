@@ -91,22 +91,22 @@ public class AuthController {
                 )
             );
 
-            // ✅ Step 2 — Fetch user details
+            //  Step 2 — Fetch user details
             User user = userService.findByEmail(request.getEmail());
 
-            // ✅ Step 3 — Check email verification
+            // Step 3 — Check email verification
             if (!user.isEmailVerified()) {
                 log.warn("Login blocked — email not verified: {}", request.getEmail());
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                         .body(Map.of("message", "Email not verified. Please verify your email first."));
             }
 
-            // ✅ Step 4 — Generate JWT
+            // Step 4 — Generate JWT
             String token = jwtUtil.generateToken(user.getEmail());
 
             log.info("Login successful for: {}", user.getEmail());
 
-            // ✅ Step 5 — Return full response with name
+            //  Step 5 — Return full response with name
             return ResponseEntity.ok(
                 new LoginResponse(
                     user.getId(),
@@ -117,12 +117,15 @@ public class AuthController {
                 )
             );
 
-        } catch (BadCredentialsException e) {
+        } 
+        catch (BadCredentialsException e) 
+        {
             log.warn("Invalid credentials for email: {}", request.getEmail());
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(Map.of("message", "Invalid email or password"));
 
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             log.error("Login failed for email: {} | reason: {}", request.getEmail(), e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(Map.of("message", e.getMessage()));

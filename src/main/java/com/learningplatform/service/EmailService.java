@@ -10,7 +10,6 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import com.learningplatform.Exception.BadRequestException;
 import com.learningplatform.entity.User;
 
 import java.util.HashMap;

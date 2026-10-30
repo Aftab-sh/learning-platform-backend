@@ -40,6 +40,8 @@ public interface EnrollmentRepository extends JpaRepository<EnrollmentEntity, Lo
     boolean existsByStudentIdAndCourseId(long studentId, long courseId);
 
     long countByCourseId(Long courseId);
+    
+    
 
 //    // ✅ JPQL fix — ab m.course.id use hoga
 //    @Query("SELECT e FROM EnrollmentEntity e WHERE e.student.id = :studentId AND e.course.id = (SELECT m.course.id FROM ModuleEntity m WHERE m.id = :moduleId)")
@@ -55,4 +57,10 @@ public interface EnrollmentRepository extends JpaRepository<EnrollmentEntity, Lo
     Optional<EnrollmentEntity> findByStudentIdAndModuleId(
         @Param("studentId") Long studentId,
         @Param("moduleId") Long moduleId);
+    
+    boolean existsByStudent_IdAndCourse_Id(
+            Long studentId,
+            Long courseId
+    );
+    
 }

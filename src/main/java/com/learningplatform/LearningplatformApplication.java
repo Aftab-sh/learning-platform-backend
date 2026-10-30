@@ -14,7 +14,7 @@ public class LearningplatformApplication
 		
 		SpringApplication.run(LearningplatformApplication.class, args);
 	}
-	
+
 	@Bean
 	public ModelMapper modelMapper()
 	{
