@@ -61,6 +61,7 @@ import com.learningplatform.service.CourseService;
 import com.learningplatform.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
@@ -70,6 +71,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/teacher/course")
+@PreAuthorize("hasRole('TEACHER')")
 public class CourseController {
 
     
@@ -115,11 +117,27 @@ public class CourseController {
     }
 
     // Create a new course
+    
+ // Create a new course
     @PostMapping("/create/{teacherId}")
     public ResponseEntity<?> createCourse(@RequestBody CourseRequest request,
-                                          @PathVariable Long teacherId) {
+                                          @PathVariable Long teacherId,
+                                          Authentication auth) {
+        User loggedInTeacher = userService.findByEmail(auth.getName());
+
+        if (!loggedInTeacher.getId().equals(teacherId)) {
+            return ResponseEntity.status(403)
+                    .body("You can only create courses for yourself");
+        }
+
         return ResponseEntity.ok(courseService.createCourse(request, teacherId));
     }
+    
+//    @PostMapping("/create/{teacherId}")
+//    public ResponseEntity<?> createCourse(@RequestBody CourseRequest request,
+//                                          @PathVariable Long teacherId) {
+//        return ResponseEntity.ok(courseService.createCourse(request, teacherId));
+//    }
 
     // Get all courses of a specific teacher (simple list)
     @GetMapping("/list/{teacherId}")

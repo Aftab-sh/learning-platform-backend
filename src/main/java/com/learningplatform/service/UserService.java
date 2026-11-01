@@ -1,6 +1,7 @@
 package com.learningplatform.service;
 
 import com.learningplatform.Exception.BadRequestException;
+import org.springframework.beans.factory.annotation.Value;
 import com.learningplatform.Exception.ResourceNotFoundException;
 import com.learningplatform.Exception.UnauthorizedException;
 import com.learningplatform.dto.LoginRequest;
@@ -37,6 +38,8 @@ public class UserService
 
     
     private final JwtUtil jwtUtil;
+    @Value("${app.email-verification-required:false}")
+    private boolean emailVerificationRequired;
     
     @Autowired
     UserService(UserRepository userRepository,
